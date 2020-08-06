@@ -4,15 +4,18 @@ public class Adder implements Runnable
 {
     private User user;
 
-    public Adder(User user)
+    private MatchSystem master;
+
+    public Adder(User user, MatchSystem master)
     {
         this.user = user;
+        this.master = master;
     }
 
     @Override
     public void run()
     {
-        Memory.elements[user.getScore() / 10].addUser(user);
+        master.elements[user.getScore() / 10].addUser(user);
     }
 }
 

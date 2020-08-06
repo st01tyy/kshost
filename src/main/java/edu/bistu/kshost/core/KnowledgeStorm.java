@@ -1,6 +1,9 @@
 package edu.bistu.kshost.core;
 
 import edu.bistu.kshost.core.model.User;
+import edu.bistu.kshost.core.service.MatchService;
+import edu.bistu.kshost.core.service.MessageReceiver;
+import edu.bistu.kshost.core.service.RegisterService;
 import edu.bistu.kshost.core.service.Service;
 
 import java.io.IOException;
@@ -25,6 +28,12 @@ public class KnowledgeStorm
     private static ServerSocketChannel serverSocketChannel; //tcp主机通道
 
     private static final int port = 2333;   //端口
+
+    private static MessageReceiver messageReceiver;
+
+    private static RegisterService registerService;
+
+    private static MatchService matchService;
 
     public static void start()
     {
@@ -55,19 +64,26 @@ public class KnowledgeStorm
             }
         }); //不固定线程数
 
-        //启动tcp主机
         try
         {
+            //启动tcp主机
             serverSocketChannel = ServerSocketChannel.open();
             serverSocketChannel.bind(new InetSocketAddress(port));
             serverSocketChannel.configureBlocking(false);
+
+            //启动服务，未完成！！！！
+            messageReceiver = new MessageReceiver(serverSocketChannel);
+            registerService = new RegisterService();
+            matchService = new MatchService();
+            services[0] = registerService;
+            services[1] = matchService;
         }
         catch (IOException e)
         {
             e.printStackTrace();
         }
 
-        //启动服务
+
 
     }
 

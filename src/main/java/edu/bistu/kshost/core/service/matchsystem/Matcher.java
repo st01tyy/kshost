@@ -1,17 +1,28 @@
 package edu.bistu.kshost.core.service.matchsystem;
 
+import edu.bistu.kshost.Log;
+import edu.bistu.kshost.core.service.Service;
+
 import java.util.List;
 
-public class Matcher implements Runnable
+public class Matcher extends Service
 {
+    private MatchSystem master;
+
+    public Matcher(MatchSystem master)
+    {
+        this.master = master;
+    }
 
     @Override
     public void run()
     {
-        while(Memory.matched < Memory.target)
+        Log.d(this.getClass().getName(), "Matcher已启动");
+
+        while(!isShutdown())
         {
             long time1 = System.currentTimeMillis();
-            for(Element element : Memory.elements)
+            for(Element element : master.elements)
             {
                 List<User> list = element.match();
                 if(list.size() < 6)
@@ -20,8 +31,8 @@ public class Matcher implements Runnable
                 }
                 else
                 {
-                    Memory.result.add(list);
-                    Memory.matched += list.size();
+                    //Memory.result.add(list);
+                    //Memory.matched += list.size();
                     // System.out.println("已匹配" + list.size());
                 }
             }
@@ -29,7 +40,7 @@ public class Matcher implements Runnable
             //System.out.println("Matcher used " + (time2 - time1) +"ms");
             try
             {
-                Thread.sleep(1000);
+                Thread.sleep(1700);
             }
             catch (InterruptedException e)
             {
@@ -37,5 +48,6 @@ public class Matcher implements Runnable
             }
         }
 
+        Log.d(this.getClass().getName(), "Matcher已关闭");
     }
 }

@@ -6,16 +6,19 @@ import java.util.*;
 
 public class Element
 {
+    private MatchSystem master;
+
     public final Object lock = new Object();
 
     private Set<User> userSet;
 
     private int index;
 
-    public Element(int index)
+    public Element(int index, MatchSystem master)
     {
         userSet = new HashSet<>();
         this.index = index;
+        this.master = master;
     }
 
     public void addUser(User u)
@@ -71,7 +74,7 @@ public class Element
                     require = 6 - list.size();
                     if(require == 0)
                         break;
-                    if(index + i < Memory.elements.length)
+                    if(index + i < master.elements.length)
                     {
                         cloneUserList(index + i, list, require);
                     }
@@ -102,7 +105,7 @@ public class Element
 
     private void cloneUserList(int elementIndex, List<User> list, int require)
     {
-        List<User> temp = Memory.elements[elementIndex].getUsers(require);
+        List<User> temp = master.elements[elementIndex].getUsers(require);
         for(User u : temp)
         {
             list.add(u);
