@@ -17,7 +17,7 @@ public class SubjectEntity
     private Long id;
 
     @Column(nullable = false)
-    @ColumnDefault("未命名")
+    @ColumnDefault("untitled")   //中文会报错
     private String name;
 
     @OneToMany
