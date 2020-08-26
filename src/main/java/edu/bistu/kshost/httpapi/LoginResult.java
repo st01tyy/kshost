@@ -1,5 +1,7 @@
 package edu.bistu.kshost.httpapi;
 
+import edu.bistu.kshost.model.User;
+
 public class LoginResult
 {
     /**
@@ -11,28 +13,28 @@ public class LoginResult
 
     private Integer result;
 
-    private Integer token;  //token的作用是防止他人通过http request恶意提交登出申请
+    private User user;  //token的作用是防止他人通过http request恶意提交登出申请
 
     public LoginResult()
     {
         result = null;
-        token = null;
+        user = null;
     }
 
-    public LoginResult(Integer result, Integer token)
+    public LoginResult(Integer result, User user)
     {
         this.result = result;
-        this.token = token;
+        this.user = user;
     }
 
-    public Integer getToken()
+    public User getUser()
     {
-        return token;
+        return user;
     }
 
-    public void setToken(Integer token)
+    public void setUser(User user)
     {
-        this.token = token;
+        this.user = user;
     }
 
     public Integer getResult()

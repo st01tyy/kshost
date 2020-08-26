@@ -33,12 +33,13 @@ public class HttpApi
         /* 调用C语言平台API */
 
         Integer token = new Random().nextInt();
-        boolean result = Memory.userLogin(new User(loginRequest.getId(), token));
+        User user = new User(loginRequest.getId(), token);
+        boolean result = Memory.userLogin(user);
         if(result)
         {
             /* 登录成功 */
             Log.d(this.getClass().getName(), "学号为" + loginRequest.getId() + "的用户登录成功");
-            return new LoginResult(100, token);
+            return new LoginResult(100, user);
         }
         else
         {

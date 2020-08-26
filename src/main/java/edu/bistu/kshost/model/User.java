@@ -8,17 +8,27 @@ public class User
 
     private Long id;    //学号
 
+    private String name;    //姓名
+
     private Integer token;
 
     public User()
     {
         id = null;
+        name = null;
         token = null;
     }
 
     public User(Long id, Integer token)
     {
         this.id = id;
+        this.token = token;
+    }
+
+    public User(Long id, String name, Integer token)
+    {
+        this.id = id;
+        this.name = name;
         this.token = token;
     }
 
@@ -40,5 +50,15 @@ public class User
     public void setToken(Integer token)
     {
         this.token = token;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public void setName(String name)
+    {
+        this.name = name;
     }
 }
