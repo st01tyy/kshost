@@ -14,6 +14,8 @@ public class MyCommandLineRunner implements CommandLineRunner
          * 在此方法初始化游戏服务
          */
 
+        Memory.initialize();    //初始化内存
+
         System.out.println("hello ");
     }
 }
