@@ -1,11 +1,8 @@
 package edu.bistu.kshost.dao.entity;
 
-import lombok.Data;
-
 import javax.persistence.*;
 
 @Entity(name = "selection")
-@Data
 public class SelectionEntity
 {
     @Id
@@ -13,12 +10,52 @@ public class SelectionEntity
     private Long id;
 
     @Column(nullable = false)
-    private String selection;
+    private String description;
 
     @Column(nullable = false)
     private Boolean isAnswer;
 
     @ManyToOne
-    @JoinColumn(nullable = false)
-    private DescriptionEntity description;
+    @JoinColumn
+    private QuestionEntity questionEntity;
+
+    public SelectionEntity()
+    {
+        id = null;
+        description = "未填写";
+        isAnswer = false;
+        questionEntity = null;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Boolean getAnswer() {
+        return isAnswer;
+    }
+
+    public void setAnswer(Boolean answer) {
+        isAnswer = answer;
+    }
+
+    public QuestionEntity getQuestionEntity() {
+        return questionEntity;
+    }
+
+    public void setQuestionEntity(QuestionEntity questionEntity) {
+        this.questionEntity = questionEntity;
+    }
 }

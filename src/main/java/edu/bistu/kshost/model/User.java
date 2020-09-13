@@ -15,18 +15,20 @@ public class User
     public User()
     {
         id = null;
-        name = null;
+        name = "未命名";
         token = null;
     }
 
     public User(Long id, Integer token)
     {
+        this();
         this.id = id;
         this.token = token;
     }
 
     public User(Long id, String name, Integer token)
     {
+        this();
         this.id = id;
         this.name = name;
         this.token = token;

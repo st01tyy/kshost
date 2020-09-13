@@ -2,14 +2,17 @@ package edu.bistu.kshost.httpapi;
 
 import edu.bistu.kshost.Log;
 import edu.bistu.kshost.Memory;
+import edu.bistu.kshost.model.Question;
+import edu.bistu.kshost.model.Subject;
 import edu.bistu.kshost.model.User;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import edu.bistu.kshost.service.QuestionService;
+import edu.bistu.kshost.service.SubjectService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Random;
 
+@CrossOrigin
 @RestController
 public class HttpApi
 {
@@ -19,6 +22,16 @@ public class HttpApi
      * 可游玩科目
      * 题目信息
      */
+
+    private SubjectService subjectService;
+    private QuestionService questionService;
+
+    @Autowired
+    public HttpApi(SubjectService subjectService, QuestionService questionService)
+    {
+        this.subjectService = subjectService;
+        this.questionService = questionService;
+    }
 
     @PostMapping("/login")
     public LoginResult login(@RequestBody LoginRequest loginRequest)
@@ -60,10 +73,40 @@ public class HttpApi
         Log.d(this.getClass().getName(), "学号为" + logoutRequest.getId() + "的用户登出");
     }
 
-    @GetMapping("/subjects")
-    public void getSubjects()
+    @PostMapping("/new_subject")
+    public Long createNewSubject(@RequestBody Subject subject)
     {
+        return subjectService.createNewSubject(subject);
+    }
 
+    @GetMapping("/get_subjects")
+    public Subject[] getSubjects()
+    {
+        return subjectService.getAllSubjects();
+    }
+
+    @PostMapping("/delete_subject")
+    public Boolean deleteSubject(@RequestParam Long subjectID)
+    {
+        return subjectService.deleteSubject(subjectID);
+    }
+
+    @PostMapping("/edit_subject")
+    public Boolean editSubject(@RequestBody Subject subject)
+    {
+        return subjectService.editSubject(subject);
+    }
+
+    @PostMapping("/new_question")
+    public Boolean createNewQuestion(@RequestBody Question question)
+    {
+        return questionService.createNewQuestion(question);
+    }
+
+    @GetMapping("/get_questions_by_subject")
+    public Question[] getQuestionsBySubject(@RequestParam Long subjectID)
+    {
+        return questionService.getQuestionsBySubjectID(subjectID);
     }
 
 }

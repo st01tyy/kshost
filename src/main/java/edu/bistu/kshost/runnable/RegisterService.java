@@ -1,6 +1,6 @@
 package edu.bistu.kshost.runnable;
 
-import edu.bistu.kshost.core.model.ClientMessage;
+import edu.bistu.kshost.kscore.model.ClientMessage;
 
 import java.util.concurrent.TimeUnit;
 

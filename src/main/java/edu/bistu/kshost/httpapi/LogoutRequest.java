@@ -7,7 +7,8 @@ public class LogoutRequest
 
     public LogoutRequest()
     {
-
+        id = null;
+        token = null;
     }
 
     public LogoutRequest(Long id, Integer token)

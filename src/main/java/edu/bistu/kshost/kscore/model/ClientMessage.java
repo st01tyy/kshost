@@ -1,4 +1,4 @@
-package edu.bistu.kshost.core.model;
+package edu.bistu.kshost.kscore.model;
 
 public class ClientMessage
 {

@@ -1,8 +1,8 @@
-package edu.bistu.kshost.core.service.matchsystem;
+package edu.bistu.kshost.kscore.service.matchsystem;
 
 import edu.bistu.kshost.Log;
-import edu.bistu.kshost.core.model.Subject;
-import edu.bistu.kshost.core.service.Service;
+import edu.bistu.kshost.kscore.service.Service;
+import edu.bistu.kshost.model.Subject;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

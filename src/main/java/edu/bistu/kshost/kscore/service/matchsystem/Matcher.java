@@ -1,7 +1,7 @@
-package edu.bistu.kshost.core.service.matchsystem;
+package edu.bistu.kshost.kscore.service.matchsystem;
 
 import edu.bistu.kshost.Log;
-import edu.bistu.kshost.core.service.Service;
+import edu.bistu.kshost.kscore.service.Service;
 
 import java.util.List;
 

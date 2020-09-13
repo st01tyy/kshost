@@ -1,4 +1,4 @@
-package edu.bistu.kshost.core.service;
+package edu.bistu.kshost.kscore.service;
 
 import edu.bistu.kshost.Log;
 

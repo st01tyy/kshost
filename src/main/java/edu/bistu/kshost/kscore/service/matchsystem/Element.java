@@ -1,6 +1,4 @@
-package edu.bistu.kshost.core.service.matchsystem;
-
-import edu.bistu.kshost.core.service.MatchService;
+package edu.bistu.kshost.kscore.service.matchsystem;
 
 import java.util.*;
 

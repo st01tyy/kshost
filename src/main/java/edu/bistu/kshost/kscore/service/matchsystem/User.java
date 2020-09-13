@@ -1,4 +1,4 @@
-package edu.bistu.kshost.core.service.matchsystem;
+package edu.bistu.kshost.kscore.service.matchsystem;
 
 public class User
 {

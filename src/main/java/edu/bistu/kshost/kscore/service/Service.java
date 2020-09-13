@@ -1,8 +1,7 @@
-package edu.bistu.kshost.core.service;
+package edu.bistu.kshost.kscore.service;
 
-import edu.bistu.kshost.core.model.ClientMessage;
+import edu.bistu.kshost.kscore.model.ClientMessage;
 
-import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 

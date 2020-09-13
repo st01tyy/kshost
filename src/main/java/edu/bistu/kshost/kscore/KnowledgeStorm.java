@@ -1,10 +1,11 @@
-package edu.bistu.kshost.core;
+package edu.bistu.kshost.kscore;
 
-import edu.bistu.kshost.core.model.User;
-import edu.bistu.kshost.core.service.MatchService;
-import edu.bistu.kshost.core.service.MessageReceiver;
-import edu.bistu.kshost.core.service.RegisterService;
-import edu.bistu.kshost.core.service.Service;
+import edu.bistu.kshost.kscore.service.MatchService;
+import edu.bistu.kshost.kscore.service.MessageReceiver;
+import edu.bistu.kshost.kscore.service.RegisterService;
+import edu.bistu.kshost.kscore.service.Service;
+import edu.bistu.kshost.model.User;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

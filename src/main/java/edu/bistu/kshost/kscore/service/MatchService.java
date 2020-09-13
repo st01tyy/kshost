@@ -1,9 +1,9 @@
-package edu.bistu.kshost.core.service;
+package edu.bistu.kshost.kscore.service;
 
 import edu.bistu.kshost.Log;
-import edu.bistu.kshost.core.model.ClientMessage;
-import edu.bistu.kshost.core.model.Subject;
-import edu.bistu.kshost.core.service.matchsystem.*;
+import edu.bistu.kshost.kscore.model.ClientMessage;
+import edu.bistu.kshost.kscore.service.matchsystem.*;
+import edu.bistu.kshost.model.Subject;
 
 import java.util.HashMap;
 import java.util.Iterator;

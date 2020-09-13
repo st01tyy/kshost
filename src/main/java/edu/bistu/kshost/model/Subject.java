@@ -1,21 +1,12 @@
-package edu.bistu.kshost.dao.entity;
+package edu.bistu.kshost.model;
 
-import javax.persistence.*;
-
-@Entity(name = "subject")
-public class SubjectEntity
+public class Subject
 {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false)
     private String name;
-
-    @Column(columnDefinition = "blob")
     private Byte[] icon;
 
-    public SubjectEntity()
+    public Subject()
     {
         id = null;
         name = "未命名";
