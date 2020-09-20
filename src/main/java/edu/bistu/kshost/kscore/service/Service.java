@@ -1,13 +1,13 @@
 package edu.bistu.kshost.kscore.service;
 
-import edu.bistu.kshost.kscore.model.ClientMessage;
+import edu.bistu.kshost.kscore.model.ServerMessage;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public abstract class Service implements Runnable
 {
-    protected LinkedBlockingQueue<ClientMessage> messageQueue;
+    protected LinkedBlockingQueue<ServerMessage> messageQueue;
 
     private Boolean isShutdown;   //终止信号
     protected final ReentrantReadWriteLock shutdownLock;    //同步锁
@@ -37,7 +37,7 @@ public abstract class Service implements Runnable
         shutdownLock.writeLock().unlock();
     }
 
-    public void receiveMessage(ClientMessage message)
+    public void receiveMessage(ServerMessage message)
     {
         messageQueue.add(message);
     }

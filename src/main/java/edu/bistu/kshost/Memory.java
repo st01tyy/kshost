@@ -1,5 +1,6 @@
 package edu.bistu.kshost;
 
+import edu.bistu.kshost.kscore.KnowledgeStorm;
 import edu.bistu.kshost.model.User;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,7 +12,10 @@ public class Memory
     public static void initialize()
     {
         loggedInUser = new ConcurrentHashMap<>();
+        KnowledgeStorm.start();
     }
+
+    private static KnowledgeStorm knowledgeStorm;
 
     public static boolean isUserLoggedIn(Long id)
     {

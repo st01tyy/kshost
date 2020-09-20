@@ -2,6 +2,7 @@ package edu.bistu.kshost.kscore.service;
 
 import edu.bistu.kshost.Log;
 import edu.bistu.kshost.kscore.model.ClientMessage;
+import edu.bistu.kshost.kscore.model.ServerMessage;
 
 import java.util.concurrent.TimeUnit;
 
@@ -16,9 +17,10 @@ public class RegisterService extends Service
         {
             try
             {
-                ClientMessage message = messageQueue.poll(5, TimeUnit.SECONDS); //5s阻塞
+                ServerMessage message = messageQueue.poll(5, TimeUnit.SECONDS); //5s阻塞
 
                 //更新用户集合
+
             }
             catch (InterruptedException e)
             {

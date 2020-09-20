@@ -2,6 +2,7 @@ package edu.bistu.kshost.kscore.service;
 
 import edu.bistu.kshost.Log;
 import edu.bistu.kshost.kscore.model.ClientMessage;
+import edu.bistu.kshost.kscore.model.ServerMessage;
 import edu.bistu.kshost.kscore.service.matchsystem.*;
 import edu.bistu.kshost.model.Subject;
 
@@ -37,7 +38,13 @@ public class MatchService extends Service
         {
             try
             {
-                ClientMessage message = messageQueue.poll(5, TimeUnit.SECONDS);
+                ServerMessage message = messageQueue.poll(5, TimeUnit.SECONDS);
+                Integer type = message.getMessageType();
+                if(type == 1)
+                {
+                    Long selectedSubjectID = message.getArr()[0].longValue();
+
+                }
             }
             catch (InterruptedException e)
             {

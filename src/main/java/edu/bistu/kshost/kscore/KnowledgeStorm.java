@@ -1,15 +1,13 @@
 package edu.bistu.kshost.kscore;
 
-import edu.bistu.kshost.kscore.service.MatchService;
-import edu.bistu.kshost.kscore.service.MessageReceiver;
-import edu.bistu.kshost.kscore.service.RegisterService;
-import edu.bistu.kshost.kscore.service.Service;
-import edu.bistu.kshost.model.User;
-import org.springframework.web.multipart.MultipartFile;
+import edu.bistu.kshost.Log;
+import edu.bistu.kshost.kscore.model.ClientMessage;
+import edu.bistu.kshost.kscore.service.*;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -18,7 +16,7 @@ import java.util.concurrent.ThreadFactory;
 
 public class KnowledgeStorm
 {
-    public static Map<Long, User> connectedUsers; //已连接的用户
+    public static Map<Long, SocketChannel> connectedUsers; //已连接的用户
 
     public static Service[] services;   //各种服务
 
@@ -38,6 +36,8 @@ public class KnowledgeStorm
 
     public static void start()
     {
+        Log.d(KnowledgeStorm.class.getName(), "启动KS");
+
         //初始化内存
         connectedUsers = new ConcurrentHashMap<>();
 
@@ -74,23 +74,30 @@ public class KnowledgeStorm
 
             //启动服务，未完成！！！！
             messageReceiver = new MessageReceiver(serverSocketChannel);
-            registerService = new RegisterService();
+            /*registerService = new RegisterService();
             matchService = new MatchService();
             services[0] = registerService;
-            services[1] = matchService;
+            services[1] = matchService;*/
+
+            serviceThreadPool.execute(messageReceiver);
+            Log.d(KnowledgeStorm.class.getName(), "KS已启动");
         }
         catch (IOException e)
         {
             e.printStackTrace();
         }
-
-
-
     }
 
     public static void shutdown()
     {
 
+    }
+
+    public static void sendMessage(ClientMessage message, Long studentID)
+    {
+        SocketChannel socketChannel = connectedUsers.get(studentID);
+        MessageSender messageSender = new MessageSender(message, socketChannel);
+        messageThreadPool.execute(messageSender);
     }
 
 }
