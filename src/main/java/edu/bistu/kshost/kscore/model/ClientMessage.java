@@ -14,6 +14,7 @@ public class ClientMessage
     private ClientMessage()
     {
         time = System.currentTimeMillis();
+        n = 0;
     }
 
     public Long getTime() {
@@ -59,6 +60,17 @@ public class ClientMessage
     {
         ClientMessage message = new ClientMessage();
         message.setType(2);
+        return message;
+    }
+
+    public static ClientMessage matchResult(Integer gameID)
+    {
+        ClientMessage message = new ClientMessage();
+        message.setType(3);
+        message.setN(1);
+        Integer[] arr = new Integer[1];
+        arr[0] = gameID;
+        message.setArr(arr);
         return message;
     }
 }

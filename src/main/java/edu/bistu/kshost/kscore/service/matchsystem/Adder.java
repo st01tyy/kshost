@@ -2,11 +2,11 @@ package edu.bistu.kshost.kscore.service.matchsystem;
 
 public class Adder implements Runnable
 {
-    private User user;
+    private MatchRequest user;
 
     private MatchSystem master;
 
-    public Adder(User user, MatchSystem master)
+    public Adder(MatchRequest user, MatchSystem master)
     {
         this.user = user;
         this.master = master;

@@ -40,6 +40,10 @@ public class MessageSender implements Runnable
 
     private Integer calculateBufferSize()
     {
+        if(message == null)
+            Log.d(getClass().getName(), "message is null");
+        else if(message.getN() == null)
+            Log.d(getClass().getName(), "message.getN() is null");
         return 16 + message.getN() * 4;
     }
 

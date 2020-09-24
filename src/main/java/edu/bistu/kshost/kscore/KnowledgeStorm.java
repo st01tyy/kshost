@@ -34,6 +34,8 @@ public class KnowledgeStorm
 
     private static MatchService matchService;
 
+    public static GameService gameService;
+
     public static void start()
     {
         Log.d(KnowledgeStorm.class.getName(), "启动KS");
@@ -74,12 +76,20 @@ public class KnowledgeStorm
 
             //启动服务，未完成！！！！
             messageReceiver = new MessageReceiver(serverSocketChannel);
+            matchService = new MatchService();
+            gameService = new GameService();
+
+            services[1] = matchService;
+            services[2] = gameService;
+
             /*registerService = new RegisterService();
             matchService = new MatchService();
             services[0] = registerService;
             services[1] = matchService;*/
 
             serviceThreadPool.execute(messageReceiver);
+            serviceThreadPool.execute(matchService);
+            serviceThreadPool.execute(gameService);
             Log.d(KnowledgeStorm.class.getName(), "KS已启动");
         }
         catch (IOException e)

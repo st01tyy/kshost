@@ -1,6 +1,6 @@
 package edu.bistu.kshost.kscore.service.matchsystem;
 
-public class User
+public class MatchRequest
 {
     private Long id;    //学号
 
@@ -8,7 +8,7 @@ public class User
 
     private Integer t;  //等待时间
 
-    public User(Long id, Integer score)
+    public MatchRequest(Long id, Integer score)
     {
         this.id = id;
         this.score = score;

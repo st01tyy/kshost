@@ -21,23 +21,14 @@ public class Matcher extends Service
 
         while(!isShutdown())
         {
-            long time1 = System.currentTimeMillis();
             for(Element element : master.elements)
             {
-                List<User> list = element.match();
-                if(list.size() < 6)
-                {
-                    //Main.addBack(list);
-                }
+                List<MatchRequest> list = element.match();
+                if(list.size() != master.size)
+                    master.addBack(list);
                 else
-                {
-                    //Memory.result.add(list);
-                    //Memory.matched += list.size();
-                    // System.out.println("已匹配" + list.size());
-                }
+                    master.createGame(list);
             }
-            long time2 = System.currentTimeMillis();
-            //System.out.println("Matcher used " + (time2 - time1) +"ms");
             try
             {
                 Thread.sleep(1700);
