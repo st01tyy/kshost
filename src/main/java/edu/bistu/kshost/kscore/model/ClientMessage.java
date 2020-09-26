@@ -73,4 +73,33 @@ public class ClientMessage
         message.setArr(arr);
         return message;
     }
+
+    public static ClientMessage startQuestion(Integer questionPosition)
+    {
+        ClientMessage message = new ClientMessage();
+        message.setType(4);
+        message.setN(1);
+        Integer[] arr = new Integer[1];
+        arr[0] = questionPosition;
+        message.setArr(arr);
+        return message;
+    }
+
+    public static ClientMessage updateStatus(Integer[] arr)
+    {
+        ClientMessage message = new ClientMessage();
+        message.setType(5);
+        message.setN(arr.length);
+        message.setArr(arr);
+        return message;
+    }
+
+    public static ClientMessage endGame(Integer[] arr)
+    {
+        ClientMessage message = new ClientMessage();
+        message.setType(6);
+        message.setN(arr.length);
+        message.setArr(arr);
+        return message;
+    }
 }

@@ -2,6 +2,9 @@ package edu.bistu.kshost.httpapi;
 
 import edu.bistu.kshost.Log;
 import edu.bistu.kshost.Memory;
+import edu.bistu.kshost.kscore.KnowledgeStorm;
+import edu.bistu.kshost.kscore.service.Game;
+import edu.bistu.kshost.model.GameInfo;
 import edu.bistu.kshost.model.Question;
 import edu.bistu.kshost.model.Subject;
 import edu.bistu.kshost.model.User;
@@ -107,6 +110,25 @@ public class HttpApi
     public Question[] getQuestionsBySubject(@RequestParam Long subjectID)
     {
         return questionService.getQuestionsBySubjectID(subjectID);
+    }
+
+    @GetMapping("/get_game_info")
+    public GameInfo getGameInfo(@RequestParam Integer gameID, @RequestParam Long playerID)
+    {
+        GameInfo gameInfo = new GameInfo();
+        Game game = KnowledgeStorm.gameService.getGame(gameID);
+        if(game == null)
+            return null;
+        gameInfo.setQuestions(game.getQuestions());
+        Long[] players = game.getPlayers();
+        String[] names = new String[players.length];
+        for(int i = 0; i < players.length; i++)
+        {
+            names[i] = players[i].toString().substring(0, 1);
+        }
+        gameInfo.setNames(names);
+        gameInfo.setTeam(game.getTeam(playerID));
+        return gameInfo;
     }
 
 }

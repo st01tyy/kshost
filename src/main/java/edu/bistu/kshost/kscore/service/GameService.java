@@ -2,6 +2,7 @@ package edu.bistu.kshost.kscore.service;
 
 import edu.bistu.kshost.Log;
 import edu.bistu.kshost.kscore.model.ServerMessage;
+import edu.bistu.kshost.model.GameInfo;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +32,13 @@ public class GameService extends Service
             try
             {
                 ServerMessage serverMessage = messageQueue.poll(5, TimeUnit.SECONDS);
+                if (serverMessage != null)
+                {
+                    Integer gameID = serverMessage.getArr()[0];
+                    Game game = gameMap.get(gameID);
+                    if(game != null)
+                        game.receiveMessage(serverMessage);
+                }
             }
             catch (InterruptedException e)
             {
@@ -59,5 +67,10 @@ public class GameService extends Service
     public void endGame(Game game)
     {
         gameMap.remove(game.getGameID());
+    }
+
+    public Game getGame(Integer gameID)
+    {
+        return gameMap.get(gameID);
     }
 }
