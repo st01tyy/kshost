@@ -4,9 +4,12 @@ import edu.bistu.kshost.Log;
 import edu.bistu.kshost.kscore.KnowledgeStorm;
 import edu.bistu.kshost.kscore.model.ClientMessage;
 import edu.bistu.kshost.kscore.model.ServerMessage;
+import edu.bistu.kshost.kscore.service.counter.Counter;
+import edu.bistu.kshost.kscore.service.counter.CounterTask;
 import edu.bistu.kshost.model.Question;
 import edu.bistu.kshost.model.Selection;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -22,25 +25,45 @@ public class Game extends Service
 
     private Integer gameID;
 
-    private Question[] questions;
+    private final Question[] questions;
 
-    private Long[] players;
+    private final Long[] players;
 
-    private Map<Long, Integer> playerMap; //<学号，数组下标>
-
-    private Integer[] totalScore;   //队伍0（蓝队），队伍1（红队）
-
-    private Integer[] playerScore;
+    private final Map<Long, Integer> playerMap; //<学号，数组下标>
 
     private Integer[] selectionStatus;  //答题状态：未答题，正确，错误（下标和玩家数组对应)
 
-    private Integer countdown; //当前题目倒计时
-
     private GameService master;
 
-    private ExecutorService threadPool;
+    class GameCounterTask extends CounterTask
+    {
+        private Integer finishSignal;   //小于0
 
-    private final int standardScore = 100;
+        GameCounterTask(Integer finishSignal)
+        {
+            this.finishSignal = finishSignal;
+        }
+
+        @Override
+        public void onStop()
+        {
+            //do nothing
+        }
+
+        @Override
+        public void onFinish()
+        {
+            ServerMessage serverMessage = new ServerMessage();
+            serverMessage.setMessageType(finishSignal);
+            receiveMessage(serverMessage);
+        }
+
+        @Override
+        public void process()
+        {
+            //do nothing
+        }
+    }
 
     public Game(Question[] questions, Long[] players, Map<Long, Integer> playerMap)
     {
@@ -54,93 +77,116 @@ public class Game extends Service
     {
         Log.d(getClass().getName(), "ID为" + gameID + "的对局开始！");
 
-        totalScore = new Integer[2];
-        totalScore[0] = 0;
-        totalScore[1] = 0;
+        //队伍0（蓝队），队伍1（红队）
+        Integer[] totalScore = new Integer[2];
+        Arrays.fill(totalScore, 0);
 
         selectionStatus = new Integer[players.length];
-        playerScore = new Integer[players.length];
-        for(int i = 0; i < playerScore.length; i++)
+        Integer[] playerScore = new Integer[players.length];
+        Arrays.fill(playerScore, 0);
+
+        ExecutorService threadPool = Executors.newSingleThreadExecutor();
+
+        for (Long player : players)
         {
-            playerScore[i] = 0;
+            KnowledgeStorm.sendMessage(ClientMessage.matchResult(gameID), player);
         }
 
-        threadPool = Executors.newSingleThreadExecutor();
-
-        for(int i = 0; i < players.length; i++)
-        {
-            KnowledgeStorm.sendMessage(ClientMessage.matchResult(gameID), players[i]);
-        }
-
-        Counter counter = new Counter(10);
+        Counter counter = new Counter(5, new GameCounterTask(-1));
         threadPool.execute(counter);
 
         Set<Long> set = new HashSet<>();
-        while(counter.getTime().intValue() > 0 && set.size() < players.length)
+        int count = 0;
+        while(count < players.length)
         {
             try
             {
                 ServerMessage message = messageQueue.poll(1, TimeUnit.SECONDS);
-                if(message != null && message.getMessageType() == 1)
-                    set.add(message.getStudentID());
+                if(message != null)
+                {
+                    Integer type = message.getMessageType();
+                    if(type == 1)
+                    {
+                        Long studentID = message.getStudentID();
+                        if(!set.contains(studentID))
+                        {
+                            count++;
+                            set.add(message.getStudentID());
+                        }
+                    }
+                    else if(type == -1)
+                    {
+                        System.out.println("对局" + gameID + "收到了计时器时间到的消息，终止循环");
+                        break;
+                    }
+                    else
+                        System.out.println("对局" + gameID + "收到了当前不支持的消息类型：" + type);
+                }
             }
             catch (InterruptedException e)
             {
                 e.printStackTrace();
             }
         }
-
-        Log.d(getClass().getName(), "对局" + gameID + "共有" + set.size() + "名玩家准备完毕！");
+        counter.stop();
+        Log.d(getClass().getName(), "对局" + gameID + "共有" + count + "名玩家准备完毕！");
 
         for(int i = 0; i < questions.length; i++)
         {
-            for(int j = 0; j < players.length; j++)
+            for (Long player : players)
             {
-                KnowledgeStorm.sendMessage(ClientMessage.startQuestion(i), players[j]);
+                KnowledgeStorm.sendMessage(ClientMessage.startQuestion(i), player);
             }
 
             Log.d(getClass().getName(), "对局" + gameID + "开始第" + (i + 1) + "题！");
 
-            counter = new Counter(questions[i].getTimeLimit() + 1);
+            counter = new Counter(questions[i].getTimeLimit() + 1, new GameCounterTask(-2));
             resetSelectionStatus();
-
             threadPool.execute(counter);
-
-            Integer count = 0;
-            while(counter.getTime() > 0 && count < players.length)
+            count = 0;
+            while(count < players.length)
             {
                 try
                 {
                     ServerMessage message = messageQueue.poll(500, TimeUnit.MILLISECONDS);
-                    if(message != null && message.getMessageType() == 2)
+                    if(message != null)
                     {
-                        count++;
-                        Integer playerPosition = playerMap.get(message.getStudentID());
-                        if(isSelectionCorrect(i, message.getArr()[1]))
+                        Integer type = message.getMessageType();
+                        if(type == 2)
                         {
-                            Integer team = getTeam(message.getStudentID());
-                            Integer timeRemain = message.getArr()[2];
-                            Integer score = (int) (standardScore *  ((double)timeRemain / (double)questions[i].getTimeLimit()));
-                            Log.d(getClass().getName(), "timeRemain = " + timeRemain + "score = " + score);
-                            totalScore[team] += score;
-                            playerScore[playerPosition] += score;
-                            selectionStatus[playerPosition] = 1;
+                            count++;
+                            Integer playerPosition = playerMap.get(message.getStudentID());
+                            if(isSelectionCorrect(i, message.getArr()[1]))
+                            {
+                                Integer team = getTeam(message.getStudentID());
+                                Integer timeRemain = message.getArr()[2];
+                                int standardScore = 100;
+                                int score = (int) (standardScore *  ((double)timeRemain / (double)questions[i].getTimeLimit()));
+                                Log.d(getClass().getName(), "timeRemain = " + timeRemain + "score = " + score);
+                                totalScore[team] += score;
+                                playerScore[playerPosition] += score;
+                                selectionStatus[playerPosition] = 1;
+                            }
+                            else
+                                selectionStatus[playerPosition] = 2;
+
+                            Integer[] arr = new Integer[players.length + 2];
+                            System.arraycopy(selectionStatus, 0, arr, 0, selectionStatus.length);
+                            arr[arr.length - 2] = totalScore[0];
+                            arr[arr.length - 1] = totalScore[1];
+
+                            for (Long player : players)
+                            {
+                                KnowledgeStorm.sendMessage(ClientMessage.updateStatus(arr), player);
+                            }
+                        }
+                        else if(type == -2)
+                        {
+                            System.out.println("对局" + gameID + "收到了计时器时间到的消息，终止循环");
+                            break;
                         }
                         else
-                            selectionStatus[playerPosition] = 2;
-
-                        Integer[] arr = new Integer[players.length + 2];
-                        for(int j = 0; j < selectionStatus.length; j++)
-                        {
-                            arr[j] = selectionStatus[j];
-                        }
-                        arr[arr.length - 2] = totalScore[0];
-                        arr[arr.length - 1] = totalScore[1];
-
-                        for(int j = 0; j < players.length; j++)
-                        {
-                            KnowledgeStorm.sendMessage(ClientMessage.updateStatus(arr), players[j]);
-                        }
+                            System.out.println("对局" + gameID + "收到了当前不支持的消息类型：" + type);
                     }
                 }
                 catch (InterruptedException e)
@@ -148,9 +194,10 @@ public class Game extends Service
                     e.printStackTrace();
                 }
             }
+            counter.stop();
         }
 
-        Integer winner;
+        int winner;
         if(totalScore[0] > totalScore[1])
             winner = 0;
         else
@@ -159,7 +206,7 @@ public class Game extends Service
         for(int i = 0; i < players.length; i++)
         {
             Integer[] arr = new Integer[3];
-            Integer team;
+            int team;
             if(i < arr.length / 2)
                 team = 0;
             else
@@ -218,14 +265,6 @@ public class Game extends Service
 
     private void resetSelectionStatus()
     {
-        for(int i = 0; i < selectionStatus.length; i++)
-        {
-            selectionStatus[i] = 0;
-        }
-    }
-
-    private void setPlayerSelectionStatus(Integer playerPosition, Integer playerStatus)
-    {
-        selectionStatus[playerPosition] = playerStatus;
+        Arrays.fill(selectionStatus, 0);
     }
 }

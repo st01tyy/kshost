@@ -131,4 +131,16 @@ public class HttpApi
         return gameInfo;
     }
 
+    @PostMapping("/delete_all_questions")
+    public Boolean deleteAllQuestionsBySubjectID(@RequestBody Subject subject)
+    {
+        if(subject != null)
+            return questionService.deleteAllQuestionsBySubject(subject.getId());
+        else
+        {
+            System.out.println("subject is null");
+            return false;
+        }
+    }
+
 }

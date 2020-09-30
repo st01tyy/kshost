@@ -35,7 +35,10 @@ public class Element
             while(iterator.hasNext())
             {
                 MatchRequest user = iterator.next();
-                user.setT(user.getT() + 1);
+                if(master.checkCancel(user.getId()))
+                    userSet.remove(user);
+                else
+                    user.setT(user.getT() + 1);
             }
         }
     }

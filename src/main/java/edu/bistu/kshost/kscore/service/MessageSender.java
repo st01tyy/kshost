@@ -9,9 +9,9 @@ import java.nio.channels.SocketChannel;
 
 public class MessageSender implements Runnable
 {
-    private ClientMessage message;
+    private final ClientMessage message;
 
-    private SocketChannel socketChannel;
+    private final SocketChannel socketChannel;
 
     private ByteBuffer byteBuffer;
 
@@ -24,12 +24,18 @@ public class MessageSender implements Runnable
     @Override
     public void run()
     {
+        if(socketChannel == null)
+        {
+            Log.d(getClass().getName(), "socketChannel is null");
+            return;
+        }
+
         byteBuffer = ByteBuffer.allocateDirect(calculateBufferSize());
         loadByteBuffer();
 
         try
         {
-            Integer length = socketChannel.write(byteBuffer);
+            int length = socketChannel.write(byteBuffer);
             Log.d(getClass().getName(), "发送了长度为" + length + "字节的数据");
         }
         catch (IOException e)
@@ -55,9 +61,9 @@ public class MessageSender implements Runnable
         if(message.getN() > 0)
         {
             Integer[] arr = message.getArr();
-            for(int i = 0; i < arr.length; i++)
+            for (Integer integer : arr)
             {
-                byteBuffer.putInt(arr[i]);
+                byteBuffer.putInt(integer);
             }
         }
         byteBuffer.position(0);

@@ -27,7 +27,21 @@ public class Matcher extends Service
                 if(list.size() != master.size)
                     master.addBack(list);
                 else
-                    master.createGame(list);
+                {
+                    boolean val = true;
+                    for(MatchRequest matchRequest : list)
+                    {
+                        if(master.checkCancel(matchRequest.getId()))
+                        {
+                            val = false;
+                            break;
+                        }
+                    }
+                    if(val)
+                        master.createGame(list);
+                    else
+                        master.addBack(list);
+                }
             }
             try
             {

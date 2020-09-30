@@ -10,10 +10,11 @@ public class Selection
     @JsonProperty
     private Boolean isAnswer;
 
-
     private Long questionID;
 
-    public Selection() {
+    public Selection()
+    {
+
     }
 
     public Long getId() {

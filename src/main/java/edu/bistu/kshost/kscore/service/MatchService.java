@@ -75,7 +75,6 @@ public class MatchService extends Service
                 ServerMessage message = messageQueue.poll(5, TimeUnit.SECONDS);
                 if(message != null)
                 {
-                    Integer type = message.getMessageType();
                     Long selectedSubjectID = message.getArr()[0].longValue();
                     Log.d(getClass().getName(), "收到用户" + message.getStudentID() + "对科目" + message.getArr()[0].longValue() +
                             "的匹配请求");

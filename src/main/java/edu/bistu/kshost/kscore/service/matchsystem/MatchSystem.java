@@ -6,6 +6,8 @@ import edu.bistu.kshost.kscore.service.Service;
 import edu.bistu.kshost.model.Subject;
 
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -27,6 +29,8 @@ public class MatchSystem extends Service
     private final int length = 1000;
 
     final int size = 2;
+
+    private Set<Long> cancelSet;
 
     public MatchSystem(Subject subject)
     {
@@ -57,6 +61,7 @@ public class MatchSystem extends Service
             thread.setName("match-system-adder");
             return thread;
         });
+        cancelSet = new CopyOnWriteArraySet<>();
 
         matcher = new Matcher(this);
         maintainer = new Maintainer(this);
@@ -69,11 +74,21 @@ public class MatchSystem extends Service
             try
             {
                 ServerMessage message = messageQueue.poll(5, TimeUnit.SECONDS);
-                if(message != null && message.getMessageType() == 1)
+                if(message != null)
                 {
-                    addMatchRequest(message.getStudentID());
+                    Integer type = message.getMessageType();
+                    if(type == 1)
+                    {
+                        cancelSet.remove(message.getStudentID());
+                        addMatchRequest(message.getStudentID());
+                    }
+                    else if(type == 2)
+                    {
+                        System.out.println("科目：【" + subject.getName() + "】的匹配系统收到"
+                                + message.getStudentID() + "取消匹配通知");
+                        cancelSet.add(message.getStudentID());
+                    }
                 }
-
             }
             catch (InterruptedException e)
             {
@@ -104,6 +119,11 @@ public class MatchSystem extends Service
         {
             adderThreadPool.execute(new Adder(matchRequest, this));
         }
+    }
+
+    public boolean checkCancel(Long id)
+    {
+        return cancelSet.contains(id);
     }
 
     public void createGame(List<MatchRequest> list)

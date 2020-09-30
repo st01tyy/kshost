@@ -88,6 +88,66 @@ public class QuestionService
         }
     }
 
+//    @Transactional(propagation = Propagation.SUPPORTS, rollbackFor = Exception.class)
+//    public Boolean deleteAllQuestionsBySubject(Long subjectID)
+//    {
+//        try
+//        {
+//            SubjectEntity subjectEntity = subjectRepository.findById(subjectID).get();
+//            List<QuestionEntity> questionEntityList = questionRepository.findQuestionEntitiesBySubjectEntity(subjectEntity);
+//            if(questionEntityList == null)
+//                return false;
+//            for(QuestionEntity questionEntity : questionEntityList)
+//            {
+//                List<SelectionEntity> selectionEntityList = questionEntity.getSelectionEntityList();
+//                if(selectionEntityList != null)
+//                {
+//                    for(SelectionEntity selectionEntity : selectionEntityList)
+//                    {
+//                        selectionRepository.delete(selectionEntity);
+//                    }
+//                }
+//                questionRepository.delete(questionEntity);
+//            }
+//            return true;
+//        }
+//        catch (Exception e)
+//        {
+//            e.printStackTrace();
+//            return false;
+//        }
+//    }
+
+    @Transactional(propagation = Propagation.SUPPORTS, rollbackFor = Exception.class)
+    public Boolean deleteAllQuestionsBySubject(Long subjectID)
+    {
+        try
+        {
+            SubjectEntity subjectEntity = subjectRepository.findById(subjectID).get();
+            List<QuestionEntity> questionEntityList = questionRepository.findQuestionEntitiesBySubjectEntity(subjectEntity);
+            if(questionEntityList == null)
+                return false;
+            for(QuestionEntity questionEntity : questionEntityList)
+            {
+                List<SelectionEntity> selectionEntityList = questionEntity.getSelectionEntityList();
+                if(selectionEntityList != null)
+                {
+                    for(SelectionEntity selectionEntity : selectionEntityList)
+                    {
+                        selectionEntity.setDescription(fix(selectionEntity.getDescription()));
+                        selectionRepository.save(selectionEntity);
+                    }
+                }
+            }
+            return true;
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public Boolean editQuestion(Question question)
     {
         return false;
@@ -115,5 +175,31 @@ public class QuestionService
         }
         question.setSelections(selections);
         return question;
+    }
+
+    private static String fix(String str)
+    {
+        try
+        {
+            int i, j;
+            for(i = 0; i < str.length(); i++)
+            {
+                if(str.charAt(i) != ' ' && str.charAt(i) != '\t')
+                    break;
+            }
+            for(j = str.length() - 1; j >= 0; j--)
+            {
+                if(str.charAt(j) != ' ' && str.charAt(j) != '\t')
+                    break;
+            }
+            j++;
+            System.out.println("i = " + i + ", j = " + j);
+            return str.substring(i, j);
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            return str;
+        }
     }
 }

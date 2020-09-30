@@ -76,58 +76,61 @@ public class MessageReceiver extends Service
                                 {
                                     byteBuffer.limit(byteBuffer.position());
                                     byteBuffer.position(0);
-                                    ServerMessage message = new ServerMessage();
-                                    message.setStudentID(byteBuffer.getLong());
-                                    message.setTime(byteBuffer.getLong());
-                                    message.setServiceNumber(byteBuffer.getInt());
-                                    message.setMessageType(byteBuffer.getInt());
-                                    message.setN(byteBuffer.getInt());
-                                    if(message.getN() > 0)
-                                    {
-                                        Integer[] arr = new Integer[message.getN()];
-                                        for(int i = 0; i < arr.length; i++)
-                                        {
-                                            arr[i] = byteBuffer.getInt();
-                                        }
-                                        message.setArr(arr);
-                                    }
 
-                                    Log.d(getClass().getName(), "学号：" + message.getStudentID() + "时间：" + message.getTime());
-                                    if(message.getServiceNumber() == 0)
+                                    while(byteBuffer.position() < byteBuffer.limit())
                                     {
-                                        if(message.getMessageType() == 1)
+                                        ServerMessage message = new ServerMessage();
+                                        message.setStudentID(byteBuffer.getLong());
+                                        message.setTime(byteBuffer.getLong());
+                                        message.setServiceNumber(byteBuffer.getInt());
+                                        message.setMessageType(byteBuffer.getInt());
+                                        message.setN(byteBuffer.getInt());
+                                        if(message.getN() > 0)
                                         {
-                                            if(Memory.isUserLoggedIn(message.getStudentID()))
+                                            Integer[] arr = new Integer[message.getN()];
+                                            for(int i = 0; i < arr.length; i++)
                                             {
-                                                KnowledgeStorm.connectedUsers.put(message.getStudentID(), socketChannel);
-                                                Log.d(getClass().getName(), "学号为" + message.getStudentID() + "的用户已连接");
-                                                KnowledgeStorm.sendMessage(ClientMessage.registerSuccess(), message.getStudentID());
+                                                arr[i] = byteBuffer.getInt();
                                             }
-                                            else
-                                                Log.d(getClass().getName(), "学号为" + message.getStudentID() + "的用户非法连接");
+                                            message.setArr(arr);
                                         }
-                                        else if(message.getMessageType() == 2)
-                                        {
-                                            KnowledgeStorm.connectedUsers.remove(message.getStudentID());
-                                            Log.d(getClass().getName(), "学号为" + message.getStudentID() + "的用户断开连接");
-                                            selectionKey.cancel();
-                                            socketChannel.close();
-                                        }
-                                    }
-                                    else
-                                        KnowledgeStorm.services[message.getServiceNumber()].receiveMessage(message);
 
+                                        Log.d(getClass().getName(), "学号：" + message.getStudentID() + "时间：" + message.getTime());
+                                        if(message.getServiceNumber() == 0)
+                                        {
+                                            if(message.getMessageType() == 1)
+                                            {
+                                                if(Memory.isUserLoggedIn(message.getStudentID()))
+                                                {
+                                                    KnowledgeStorm.connectedUsers.put(message.getStudentID(), socketChannel);
+                                                    Log.d(getClass().getName(), "学号为" + message.getStudentID() + "的用户已连接");
+                                                    KnowledgeStorm.sendMessage(ClientMessage.registerSuccess(), message.getStudentID());
+                                                }
+                                                else
+                                                    Log.d(getClass().getName(), "学号为" + message.getStudentID() + "的用户非法连接");
+                                            }
+                                            else if(message.getMessageType() == 2)
+                                            {
+                                                KnowledgeStorm.connectedUsers.remove(message.getStudentID());
+                                                Log.d(getClass().getName(), "学号为" + message.getStudentID() + "的用户断开连接");
+                                                selectionKey.cancel();
+                                                socketChannel.close();
+                                            }
+                                        }
+                                        else
+                                            KnowledgeStorm.services[message.getServiceNumber()].receiveMessage(message);
+                                    }
                                     byteBuffer.clear();
                                 }
 
                             }
                             catch (Exception e)
                             {
-                                e.printStackTrace();
+                                System.out.println("MessageReceiver抛出异常：" + e.getMessage());
+                                selectionKey.cancel();
                             }
                         }
                     }
-
                     iterator.remove();
                 }
             }

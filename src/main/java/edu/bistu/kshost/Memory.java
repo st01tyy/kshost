@@ -36,14 +36,16 @@ public class Memory
          * 通过C语言平台身份验证后，调用此方法
          */
 
-        boolean isLoggedIn = isUserLoggedIn(user.getId());
-        if(isLoggedIn)
-            return false;   //重复登录
-        else
-        {
-            addNewUser(user);
-            return true;
-        }
+//        boolean isLoggedIn = isUserLoggedIn(user.getId());
+//        if(isLoggedIn)
+//            return false;   //重复登录
+//        else
+//        {
+//            addNewUser(user);
+//            return true;
+//        }
+        addNewUser(user);
+        return true;
     }
 
     public static void userLogout(User user)
