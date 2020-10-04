@@ -30,8 +30,6 @@ public class KnowledgeStorm
 
     private static MessageReceiver messageReceiver;
 
-    private static RegisterService registerService;
-
     private static MatchService matchService;
 
     public static GameService gameService;

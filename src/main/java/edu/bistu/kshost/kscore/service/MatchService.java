@@ -3,6 +3,7 @@ package edu.bistu.kshost.kscore.service;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import edu.bistu.kshost.Log;
+import edu.bistu.kshost.Memory;
 import edu.bistu.kshost.kscore.model.ClientMessage;
 import edu.bistu.kshost.kscore.model.ServerMessage;
 import edu.bistu.kshost.kscore.service.matchsystem.*;
@@ -42,7 +43,7 @@ public class MatchService extends Service
 
         /* 找题 */
         Request.Builder requestBuilder = new Request.Builder();
-        requestBuilder.url("http://" + "localhost" + ":" + "8080"
+        requestBuilder.url("http://" + Memory.apiAddress + ":" + Memory.apiPort
                 + "/get_subjects");
         requestBuilder.get();
 

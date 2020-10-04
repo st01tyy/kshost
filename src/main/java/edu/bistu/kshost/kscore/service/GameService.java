@@ -2,9 +2,7 @@ package edu.bistu.kshost.kscore.service;
 
 import edu.bistu.kshost.Log;
 import edu.bistu.kshost.kscore.model.ServerMessage;
-import edu.bistu.kshost.model.GameInfo;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;

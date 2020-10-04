@@ -1,5 +1,6 @@
 package edu.bistu.kshost.httpapi;
 
+import com.google.gson.Gson;
 import edu.bistu.kshost.Log;
 import edu.bistu.kshost.Memory;
 import edu.bistu.kshost.kscore.KnowledgeStorm;
@@ -10,6 +11,10 @@ import edu.bistu.kshost.model.Subject;
 import edu.bistu.kshost.model.User;
 import edu.bistu.kshost.service.QuestionService;
 import edu.bistu.kshost.service.SubjectService;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,6 +41,41 @@ public class HttpApi
         this.questionService = questionService;
     }
 
+    private String verify(String id, String pw)
+    {
+        String ip = "localhost";
+        try
+        {
+            //向服务器提交表单
+            OkHttpClient okHttpClient = new OkHttpClient();
+            okhttp3.RequestBody requestBody = new FormBody.Builder()
+                    .add("id", id)
+                    .add("pw", pw)
+                    .build();
+            Request request = new Request.Builder()
+                    .url("http://" + Memory.cPlatFormAddress + ":" + Memory.cPlatFormApiPort + "/android/studentLogin")
+                    .post(requestBody)
+                    .build();
+
+            //获取服务器返回的JSON
+            Response response = okHttpClient.newCall(request).execute();
+            String json = response.body().string();
+            Log.d(getClass().getName(), json);
+            Gson gson = new Gson();
+            Source source = gson.fromJson(json, Source.class);
+            Log.d(getClass().getName(), source.getData().getStudentName());
+            if(source.getData() != null)
+                return source.getData().getStudentName();
+            else
+                return null;
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     @PostMapping("/login")
     public LoginResult login(@RequestBody LoginRequest loginRequest)
     {
@@ -47,9 +87,14 @@ public class HttpApi
          */
 
         /* 调用C语言平台API */
+        String name = verify(loginRequest.getId().toString(), loginRequest.getPw());
+        if(name == null)
+            return new LoginResult(101, null);
 
         Integer token = new Random().nextInt();
         User user = new User(loginRequest.getId(), token);
+        if(name != null)
+            user.setName(name);
         boolean result = Memory.userLogin(user);
         if(result)
         {
@@ -124,7 +169,7 @@ public class HttpApi
         String[] names = new String[players.length];
         for(int i = 0; i < players.length; i++)
         {
-            names[i] = players[i].toString().substring(0, 1);
+            names[i] = Memory.getUsername(players[i]).substring(0, 1);
         }
         gameInfo.setNames(names);
         gameInfo.setTeam(game.getTeam(playerID));

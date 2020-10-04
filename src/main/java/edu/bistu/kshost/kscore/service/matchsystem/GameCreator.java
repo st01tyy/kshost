@@ -3,6 +3,7 @@ package edu.bistu.kshost.kscore.service.matchsystem;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import edu.bistu.kshost.Log;
+import edu.bistu.kshost.Memory;
 import edu.bistu.kshost.kscore.KnowledgeStorm;
 import edu.bistu.kshost.kscore.service.Game;
 import edu.bistu.kshost.model.Question;
@@ -35,7 +36,7 @@ public class GameCreator implements Runnable
     {
         /* 找题 */
         Request.Builder requestBuilder = new Request.Builder();
-        requestBuilder.url("http://" + "localhost" + ":" + "8080"
+        requestBuilder.url("http://" + Memory.apiAddress + ":" + Memory.apiPort
                 + "/get_questions_by_subject" + "?subjectID=" + master.getSubjectID());
         requestBuilder.get();
 

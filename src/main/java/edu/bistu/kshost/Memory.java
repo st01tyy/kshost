@@ -9,6 +9,12 @@ public class Memory
 {
     private static ConcurrentHashMap<Long, User> loggedInUser;    //<学号, 用户>
 
+    public final static String apiAddress = "localhost";
+    public final static String apiPort = "2334";
+
+    public final static String cPlatFormAddress = "localhost";
+    public final static String cPlatFormApiPort = "7777";
+
     public static void initialize()
     {
         loggedInUser = new ConcurrentHashMap<>();
@@ -16,6 +22,14 @@ public class Memory
     }
 
     private static KnowledgeStorm knowledgeStorm;
+
+    public static String getUsername(Long id)
+    {
+        User user = loggedInUser.get(id);
+        if(user == null)
+            return null;
+        return user.getName();
+    }
 
     public static boolean isUserLoggedIn(Long id)
     {
